@@ -9,6 +9,18 @@ const account1 = {
   movements: [200, 450, -400, 3000, -650, -130, 70, 1300],
   interestRate: 1.2, // %
   pin: 1111,
+  movementsDates: [
+    '2023-03-10T21:31:17.178Z',
+    '2023-03-30T07:42:02.383Z',
+    '2023-03-30T09:15:04.904Z',
+    '2023-04-01T10:17:24.185Z',
+    '2023-04-08T14:11:59.604Z',
+    '2023-04-13T17:01:17.194Z',
+    '2023-04-14T23:36:17.929Z',
+    '2023-04-14T10:51:36.790Z',
+  ],
+  currency: 'EUR',
+  locale: 'pt-PT',
 };
 
 const account2 = {
@@ -16,6 +28,18 @@ const account2 = {
   movements: [5000, 3400, -150, -790, -3210, -1000, 8500, -30],
   interestRate: 1.5,
   pin: 2222,
+  movementsDates: [
+    '2023-03-01T13:15:33.035Z',
+    '2023-03-30T09:48:16.867Z',
+    '2023-03-25T06:04:23.907Z',
+    '2023-04-10T14:18:46.235Z',
+    '2023-04-11T16:33:06.386Z',
+    '2023-04-12T14:43:26.374Z',
+    '2023-04-13T18:49:59.371Z',
+    '2023-04-14T12:01:20.894Z',
+  ],
+  currency: 'USD',
+  locale: 'en-US',
 };
 
 const account3 = {
@@ -23,13 +47,37 @@ const account3 = {
   movements: [200, -200, 340, -300, -20, 50, 400, -460],
   interestRate: 0.7,
   pin: 3333,
+  movementsDates: [
+    '2023-03-01T13:15:33.035Z',
+    '2023-03-30T09:48:16.867Z',
+    '2023-04-02T06:04:23.907Z',
+    '2023-04-02T14:18:46.235Z',
+    '2023-04-05T16:33:06.386Z',
+    '2023-04-10T14:43:26.374Z',
+    '2023-04-12T18:49:59.371Z',
+    '2023-04-14T12:01:20.894Z',
+  ],
+  currency: 'WON',
+  locale: 'ko-KR',
 };
 
 const account4 = {
   owner: 'Sarah Smith',
-  movements: [430, 1000, 700, 50, 90],
+  movements: [430, 1000, 700, -80,  50, 90, -60, 20],
   interestRate: 1,
   pin: 4444,
+  movementsDates: [
+    '2023-01-01T13:15:33.035Z',
+    '2023-01-30T09:48:16.867Z',
+    '2023-03-08T06:04:23.907Z',
+    '2023-03-09T14:18:46.235Z',
+    '2023-04-10T16:33:06.386Z',
+    '2023-04-12T14:43:26.374Z',
+    '2023-04-14T18:49:59.371Z',
+    '2023-04-14T12:01:20.894Z',
+  ],
+  currency: 'SYP',
+  locale: 'ar-SY',
 };
 
 const accounts = [account1, account2, account3, account4];
@@ -37,6 +85,7 @@ const accounts = [account1, account2, account3, account4];
 // Elements
 const labelWelcome = document.querySelector('.welcome');
 const labelDate = document.querySelector('.date');
+const movementDate = document.querySelector('.movements__date');
 const labelBalance = document.querySelector('.balance__value');
 const labelSumIn = document.querySelector('.summary__value--in');
 const labelSumOut = document.querySelector('.summary__value--out');
@@ -73,16 +122,13 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
   let acronymOwner;
   let ownerBalance;
   let acroUsers = accounts.map(account => account.owner.split(" ").map(word => word[0]).join("").toLowerCase())
-  console.log(matchPin)
-  console.log(acronymOwner)
-  console.log("acroUsers", acroUsers)
+
   let interval;
   //////// LOGIN
   const login = (event) => {
     let time = 4 * 60 + 59;
     console.log("matchPin", matchPin)
-    // Default inital value of timer
-    // variable to the time
+
     let countDownTime = time;
     
     matchPin = accounts.find(account => Number(inputLoginPin.value) === account.pin)
@@ -100,7 +146,56 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
     labelSumIn.textContent = positiveDeposit
     labelSumOut.textContent = negativeDeposit
     
+    const date = new Date()
+    const now = new Intl.DateTimeFormat(`${matchPin.locale}`, {
+      day: 'numeric',
+      month: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+    }).format(date)
+
+    labelDate.textContent = `${now}`
+
     
+    /*     const daysTillNow = function(str) {
+      let today = new Date();
+      //time stamp is taken for testing
+      let course_time = new Date(str);
+      //difference in mili seconds
+      let diff = today.getTime() - course_time.getTime();
+      //round off mili-sec to days
+      diff = Math.round(diff / (1000 * 60 * 60 * 24));
+      return diff + " day(s)";
+    }; */
+
+
+    let movDateArr = matchPin.movementsDates.map((arrDate) => {
+      console.log(new Date(arrDate).toLocaleDateString())
+
+      
+      let today = new Date()
+      let courseTime = new Date(arrDate)
+      let difff = today.getTime() - courseTime.getTime()
+      let diffDay = Math.round(difff / (1000 * 60 * 60 * 24))
+
+      console.log("diffDay", diffDay)
+
+      if (diffDay === 0) movementDate.textContent = "Today"
+      if (diffDay === 1) movementDate.textContent = "Yesterday"
+      if (diffDay > 1 && diffDay < 7) movementDate.textContent = "This Week"
+      if (diffDay > 7 && diffDay < 14) movementDate.textContent = "Last Week"
+      if (diffDay > 14 && diffDay < 21) movementDate.textContent = "two weeks ago"
+      if (diffDay > 21) movementDate.textContent = courseTime.toLocaleDateString()
+      console.log("movementDate", movementDate.textContent)
+      let movDate = movementDate.textContent
+      
+      return movDate
+      
+    })
+
+
+    console.log(movDateArr)
     clearInterval(interval)
     // Function calculate time string
     const findTimeString = () => {
@@ -128,7 +223,7 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
         return `
           <div class="movements__row">
             <div class="movements__type movements__type--${mov < 0 ? "withdrawal" : "deposit"}">${matchPin.movements.length -i} ${mov < 0 ? "withdrawal" : "deposit"}</div>
-            <div class="movements__date">3 days ago</div>
+            <div class="movements__date">${movDateArr.toReversed()[i]}</div>
             <div class="movements__value">${mov}€</div>
           </div>
           `
