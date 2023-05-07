@@ -157,29 +157,12 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
     labelDate.textContent = `${now}`
 
-    
-    /*     const daysTillNow = function(str) {
-      let today = new Date();
-      //time stamp is taken for testing
-      let course_time = new Date(str);
-      //difference in mili seconds
-      let diff = today.getTime() - course_time.getTime();
-      //round off mili-sec to days
-      diff = Math.round(diff / (1000 * 60 * 60 * 24));
-      return diff + " day(s)";
-    }; */
-
-
     let movDateArr = matchPin.movementsDates.map((arrDate) => {
-      console.log(new Date(arrDate).toLocaleDateString())
-
       
       let today = new Date()
       let courseTime = new Date(arrDate)
       let difff = today.getTime() - courseTime.getTime()
       let diffDay = Math.round(difff / (1000 * 60 * 60 * 24))
-
-      console.log("diffDay", diffDay)
 
       if (diffDay === 0) movementDate.textContent = "Today"
       if (diffDay === 1) movementDate.textContent = "Yesterday"
@@ -187,15 +170,12 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
       if (diffDay > 7 && diffDay < 14) movementDate.textContent = "Last Week"
       if (diffDay > 14 && diffDay < 21) movementDate.textContent = "two weeks ago"
       if (diffDay > 21) movementDate.textContent = courseTime.toLocaleDateString()
-      console.log("movementDate", movementDate.textContent)
       let movDate = movementDate.textContent
       
       return movDate
       
     })
 
-
-    console.log(movDateArr)
     clearInterval(interval)
     // Function calculate time string
     const findTimeString = () => {
@@ -217,7 +197,6 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
     interval = setInterval(findTimeString, 1000)
       
     containerMovements.innerHTML = ""
-    console.log("matchPin.movements to display", matchPin.movements)
     containerMovements.insertAdjacentHTML("afterbegin", `
       ${matchPin.movements.toReversed().map((mov, i) => {
         return `
@@ -289,8 +268,6 @@ const loan = (event) => {
       )}
     `
     )
-  } else {
-    console.log("no")
   }
 }
 const transfer = (event) => {
