@@ -10,14 +10,14 @@ const account1 = {
   interestRate: 1.2, // %
   pin: 1111,
   movementsDates: [
-    '2023-03-10T21:31:17.178Z',
-    '2023-03-30T07:42:02.383Z',
-    '2023-03-30T09:15:04.904Z',
-    '2023-04-01T10:17:24.185Z',
-    '2023-04-08T14:11:59.604Z',
-    '2023-04-13T17:01:17.194Z',
-    '2023-04-14T23:36:17.929Z',
-    '2023-04-14T10:51:36.790Z',
+    '2023-09-10T21:31:17.178Z',
+    '2023-09-30T07:42:02.383Z',
+    '2023-09-30T09:15:04.904Z',
+    '2023-10-01T10:17:24.185Z',
+    '2023-10-08T14:11:59.604Z',
+    '2023-10-13T17:01:17.194Z',
+    '2023-10-14T23:36:17.929Z',
+    '2023-10-14T10:51:36.790Z',
   ],
   currency: 'EUR',
   locale: 'pt-PT',
@@ -29,14 +29,14 @@ const account2 = {
   interestRate: 1.5,
   pin: 2222,
   movementsDates: [
-    '2023-03-01T13:15:33.035Z',
-    '2023-03-30T09:48:16.867Z',
-    '2023-03-25T06:04:23.907Z',
-    '2023-04-10T14:18:46.235Z',
-    '2023-04-11T16:33:06.386Z',
-    '2023-04-12T14:43:26.374Z',
-    '2023-04-13T18:49:59.371Z',
-    '2023-04-14T12:01:20.894Z',
+    '2023-09-01T13:15:33.035Z',
+    '2023-09-30T09:48:16.867Z',
+    '2023-09-25T06:04:23.907Z',
+    '2023-10-10T14:18:46.235Z',
+    '2023-10-11T16:33:06.386Z',
+    '2023-10-12T14:43:26.374Z',
+    '2023-10-13T18:49:59.371Z',
+    '2023-10-14T12:01:20.894Z',
   ],
   currency: 'USD',
   locale: 'en-US',
@@ -48,14 +48,14 @@ const account3 = {
   interestRate: 0.7,
   pin: 3333,
   movementsDates: [
-    '2023-03-01T13:15:33.035Z',
-    '2023-03-30T09:48:16.867Z',
-    '2023-04-02T06:04:23.907Z',
-    '2023-04-02T14:18:46.235Z',
-    '2023-04-05T16:33:06.386Z',
-    '2023-04-10T14:43:26.374Z',
-    '2023-04-12T18:49:59.371Z',
-    '2023-04-14T12:01:20.894Z',
+    '2023-09-01T13:15:33.035Z',
+    '2023-09-30T09:48:16.867Z',
+    '2023-10-02T06:04:23.907Z',
+    '2023-10-02T14:18:46.235Z',
+    '2023-10-05T16:33:06.386Z',
+    '2023-10-10T14:43:26.374Z',
+    '2023-10-12T18:49:59.371Z',
+    '2023-10-14T12:01:20.894Z',
   ],
   currency: 'WON',
   locale: 'ko-KR',
@@ -69,12 +69,12 @@ const account4 = {
   movementsDates: [
     '2023-01-01T13:15:33.035Z',
     '2023-01-30T09:48:16.867Z',
-    '2023-03-08T06:04:23.907Z',
-    '2023-03-09T14:18:46.235Z',
-    '2023-04-10T16:33:06.386Z',
-    '2023-04-12T14:43:26.374Z',
-    '2023-04-14T18:49:59.371Z',
-    '2023-04-14T12:01:20.894Z',
+    '2023-09-08T06:04:23.907Z',
+    '2023-09-09T14:18:46.235Z',
+    '2023-10-10T16:33:06.386Z',
+    '2023-10-12T14:43:26.374Z',
+    '2023-10-14T18:49:59.371Z',
+    '2023-10-14T12:01:20.894Z',
   ],
   currency: 'SYP',
   locale: 'ar-SY',
@@ -195,7 +195,8 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
       }
     }
     interval = setInterval(findTimeString, 1000)
-      
+    console.log("  matchPin.movements",   matchPin.movements)
+    console.log("  matchPin.date",   matchPin.movementsDates)
     containerMovements.innerHTML = ""
     containerMovements.insertAdjacentHTML("afterbegin", `
       ${matchPin.movements.toReversed().map((mov, i) => {
@@ -247,20 +248,38 @@ const loan = (event) => {
   if (Number(inputLoanAmount.value) < (ownerBalance * 0.1)) {
     inputLoanAmount.textContent = ""
     matchPin.movements.push(Number(inputLoanAmount.value))
+    matchPin.movementsDates.push(new Date().toISOString())
     ownerBalance = matchPin.movements.reduce((acc, currentValue) => acc + currentValue, 0)
     labelBalance.textContent = `${ownerBalance}€`
     const positiveDeposit = matchPin.movements.filter(value => value > 0).reduce((acc, currentValue) => acc + currentValue, 0)
     const  interest = (positiveDeposit * matchPin.interestRate).toFixed(2)
     labelSumInterest.textContent = interest /100
     labelSumIn.textContent = positiveDeposit
-
+    let movDateArr = matchPin.movementsDates.map((arrDate) => {
+      
+      let today = new Date()
+      let courseTime = new Date(arrDate)
+      let difff = today.getTime() - courseTime.getTime()
+      let diffDay = Math.round(difff / (1000 * 60 * 60 * 24))
+  
+      if (diffDay === 0) movementDate.textContent = "Today"
+      if (diffDay === 1) movementDate.textContent = "Yesterday"
+      if (diffDay > 1 && diffDay < 7) movementDate.textContent = "This Week"
+      if (diffDay > 7 && diffDay < 14) movementDate.textContent = "Last Week"
+      if (diffDay > 14 && diffDay < 21) movementDate.textContent = "two weeks ago"
+      if (diffDay > 21) movementDate.textContent = courseTime.toLocaleDateString()
+      let movDate = movementDate.textContent
+      
+      return movDate
+      
+    })
     containerMovements.innerHTML = ""
     containerMovements.insertAdjacentHTML("afterbegin", `
       ${matchPin.movements.toReversed().map((mov, i) => {
         return `
           <div class="movements__row">
             <div class="movements__type movements__type--${mov < 0 ? "withdrawal" : "deposit"}">${matchPin.movements.length -i} ${mov < 0 ? "withdrawal" : "deposit"}</div>
-            <div class="movements__date">3 days ago</div>
+            <div class="movements__date">${movDateArr.toReversed()[i]}</div>
             <div class="movements__value">${mov}€</div>
           </div>
           `
@@ -281,16 +300,40 @@ const transfer = (event) => {
   labelSumOut.textContent = negativeDeposit
 
   accounts[whoIsAcro].movements.push(Number(inputTransferAmount.value))
+  accounts[whoIsAcro].movementsDates.push(new Date().toISOString())
   inputTransferAmount.value = ""
   inputTransferTo.value = ""
-  
+
+  console.log("  matchPin.movements",   matchPin.movements)
+  console.log("  matchPin.date",   accounts[whoIsAcro].movementsDates)
+
+
+  let movDateArr = accounts[whoIsAcro].movementsDates.map((arrDate) => {
+      
+    let today = new Date()
+    let courseTime = new Date(arrDate)
+    let difff = today.getTime() - courseTime.getTime()
+    let diffDay = Math.round(difff / (1000 * 60 * 60 * 24))
+
+    if (diffDay === 0) movementDate.textContent = "Today"
+    if (diffDay === 1) movementDate.textContent = "Yesterday"
+    if (diffDay > 1 && diffDay < 7) movementDate.textContent = "This Week"
+    if (diffDay > 7 && diffDay < 14) movementDate.textContent = "Last Week"
+    if (diffDay > 14 && diffDay < 21) movementDate.textContent = "two weeks ago"
+    if (diffDay > 21) movementDate.textContent = courseTime.toLocaleDateString()
+    let movDate = movementDate.textContent
+    
+    return movDate
+    
+  })
+
   containerMovements.innerHTML = ""
   containerMovements.insertAdjacentHTML("afterbegin", `
     ${matchPin.movements.toReversed().map((mov, i) => {
       return `
         <div class="movements__row">
           <div class="movements__type movements__type--${mov < 0 ? "withdrawal" : "deposit"}">${matchPin.movements.length -i} ${mov < 0 ? "withdrawal" : "deposit"}</div>
-          <div class="movements__date">3 days ago</div>
+          <div class="movements__date">${movDateArr.toReversed()[i]}</div>
           <div class="movements__value">${mov}€</div>
         </div>
         `
